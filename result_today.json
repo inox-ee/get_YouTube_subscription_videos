@@ -1,0 +1,45 @@
+{
+  "にじさんじ": [
+    {
+      "channelId": "鈴原るる【にじさんじ所属】",
+      "videos": [
+        {
+          "videoTitle": "【Minecraft(マインクラフト)】おはるる！！朝のゆったりマイクラ枠ｯ！【鈴原るる/にじさんじ】",
+          "videoId": "https://www.youtube.com/watch?v=vfhhnN_vyHg"
+        },
+        {
+          "videoTitle": "【スーパーマリオ64】スターを求めてｯｯ…！！！！！！【鈴原るる/にじさんじ】",
+          "videoId": "https://www.youtube.com/watch?v=UrPBZaaD_rE"
+        }
+      ]
+    },
+    {
+      "channelId": "健屋花那【にじさんじ】KanaSukoya",
+      "videos": [
+        {
+          "videoTitle": "【ラジオ】すこやか放送第六回　ゲスト：リゼ・ヘルエスタ【健屋花那/にじさんじ】",
+          "videoId": "https://www.youtube.com/watch?v=sR2EKRQs_zA"
+        },
+        {
+          "videoTitle": "【マリオカート】チューリップ組がマリオカートで【健屋花那/にじさんじ】",
+          "videoId": "https://www.youtube.com/watch?v=ShB90esBObk"
+        }
+      ]
+    }
+  ],
+  "ホロライブ": [
+    {
+      "channelId": "Aqua Ch. 湊あくあ",
+      "videos": [
+        {
+          "videoTitle": "【Minecraft】ホロ鯖への挑戦状⁉私の秘密の宝物を隠すぞおお！【湊あくあ/ワンピース】",
+          "videoId": "https://www.youtube.com/watch?v=T8B_IJ9EVpM"
+        },
+        {
+          "videoTitle": "【耐久】視聴者参加型！マリオカート8DXで『２連続１位』取れるまで終われない！【湊あくあ/絶対優勝卍】",
+          "videoId": "https://www.youtube.com/watch?v=GW_-YuCQCDE"
+        }
+      ]
+    }
+  ]
+}

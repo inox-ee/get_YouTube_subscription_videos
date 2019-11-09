@@ -1,0 +1,25 @@
+{
+  "tags": ["にじさんじ", "ホロライブ", "VTuber", "モンハン"],
+  "items": [
+    {
+      "channelId": "UC_a1ZYZ8ZTXpjg9xUY9sj8w",
+      "title": "鈴原るる【にじさんじ所属】",
+      "tags": ["にじさんじ", "VTuber"]
+    },
+    {
+      "channelId": "UC1opHUrw8rvnsadT-iGp7Cg",
+      "title": "Aqua Ch. 湊あくあ",
+      "tags": ["ホロライブ", "VTuber"]
+    },
+    {
+      "channelId": "UCwQ9Uv-m8xkE5PzRc7Bqx3Q",
+      "title": "御伽原 江良 / Otogibara Era【にじさんじ】",
+      "tags": ["にじさんじ", "VTuber"]
+    },
+    {
+      "channelId": "UCFv2z4iM5vHrS8bZPq4fHQQ",
+      "title": "HIMEHINA Channel",
+      "tags": ["VTuber"]
+    }
+  ]
+}
