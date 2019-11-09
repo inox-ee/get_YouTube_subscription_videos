@@ -2,4 +2,4 @@
 based_on_style = google
 no_spaces_around_selected_binary_operators=true
 arithmetic_precedence_indication=true
-column_limit = 80
+column_limit = 100
