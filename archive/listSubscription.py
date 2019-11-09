@@ -43,14 +43,28 @@ def get_authenticated_service():
 
 # This method calls the API's youtube.subscriptions.insert method to add a
 # subscription to the specified channel.
-def list_subscription(youtube, channel_id):
-    list_subscription_response = youtube.subscriptions().list(
-        part="snippet",
-        channelId=channel_id,
-        maxResults=25,
-    ).execute()
+def get_subscription_list(youtube, results, channel_id, **kwargs):
+    if not kwargs:
+        list_subscription_response = youtube.subscriptions().list(
+            part="snippet",
+            channelId=channel_id,
+            maxResults=25,
+        ).execute()
+    else:
+        list_subscription_response = youtube.subscriptions().list(
+            part="snippet",
+            channelId=channel_id,
+            maxResults=25,
+            pageToken=kwargs["pageToken"],
+        ).execute()
 
-    return list_subscription_response
+    for item in list_subscription_response.get("items", []):
+        results.append("({}) {}".format(item["snippet"]["resourceId"]["channelId"],
+                                        item["snippet"]["title"]))
+
+    nextPageToken = list_subscription_response.get("nextPageToken")
+    if nextPageToken is not None:
+        get_subscription_list(youtube, results, channel_id, pageToken=nextPageToken)
 
 
 if __name__ == '__main__':
@@ -62,8 +76,9 @@ if __name__ == '__main__':
 
     youtube = get_authenticated_service()
     try:
-        channel_title = list_subscription(youtube, args.channel_id)
+        list_subscription = []
+        get_subscription_list(youtube, list_subscription, args.channel_id)
+        print("Channels:\n", "\n".join(list_subscription), "\n")
+
     except HttpError as e:
         print('An HTTP error {} occurred:\n{}'.format(e.resp.status, e.content))
-    else:
-        print("result: {}\n".format(channel_title))
