@@ -13,15 +13,15 @@ YOUTUBE_API_VERSION = "v3"
 
 
 def youtube_search():
-    youtube = build(YOUTUBE_API_SERVICE_NAME,
-                    YOUTUBE_API_VERSION,
-                    developerKey=DEVELOPER_KEY)
+    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVELOPER_KEY)
 
     # Call the search.list method to retrieve results matching the specified
     # query term.
-    search_response = youtube.search().list(q="sirose rei",
-                                            part="id,snippet",
-                                            maxResults=25).execute()
+    search_response = youtube.search().list(
+        channelId="UCdpUojq0KWZCN9bxXnZwz5w",  # ex) ars_almal
+        publishedAfter="2019-11-08T00:00:00Z",
+        part="id,snippet",
+        maxResults=25).execute()
 
     videos = []
     channels = []
@@ -31,14 +31,14 @@ def youtube_search():
     # matching videos, channels, and playlists.
     for search_result in search_response.get("items", []):
         if search_result["id"]["kind"] == "youtube#video":
-            videos.append("%s (%s)" % (search_result["snippet"]["title"],
-                                       search_result["id"]["videoId"]))
+            videos.append("%s (%s)" %
+                          (search_result["snippet"]["title"], search_result["id"]["videoId"]))
         elif search_result["id"]["kind"] == "youtube#channel":
-            channels.append("%s (%s)" % (search_result["snippet"]["title"],
-                                         search_result["id"]["channelId"]))
+            channels.append("%s (%s)" %
+                            (search_result["snippet"]["title"], search_result["id"]["channelId"]))
         elif search_result["id"]["kind"] == "youtube#playlist":
-            playlists.append("%s (%s)" % (search_result["snippet"]["title"],
-                                          search_result["id"]["playlistId"]))
+            playlists.append("%s (%s)" %
+                             (search_result["snippet"]["title"], search_result["id"]["playlistId"]))
 
     print("Videos:\n", "\n".join(videos), "\n")
     print("Channels:\n", "\n".join(channels), "\n")
