@@ -8,6 +8,7 @@
 import argparse
 import os
 import re
+import json
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -59,8 +60,12 @@ def get_subscription_list(youtube, results, channel_id, **kwargs):
         ).execute()
 
     for item in list_subscription_response.get("items", []):
-        results.append("({}) {}".format(item["snippet"]["resourceId"]["channelId"],
-                                        item["snippet"]["title"]))
+        item_formatted = dict(channelId=item["snippet"]["resourceId"]["channelId"],
+                              title=item["snippet"]["title"],
+                              tags=[])
+        results.append(item_formatted)
+        # results.append("({}) {}".format(item["snippet"]["resourceId"]["channelId"],
+        #                                 item["snippet"]["title"]))
 
     nextPageToken = list_subscription_response.get("nextPageToken")
     if nextPageToken is not None:
@@ -78,7 +83,11 @@ if __name__ == '__main__':
     try:
         list_subscription = []
         get_subscription_list(youtube, list_subscription, args.channel_id)
-        print("Channels:\n", "\n".join(list_subscription), "\n")
+        # print("Channels:\n", "\n".join(list_subscription), "\n")
+        path_to_result = "./result.json"
+        with open(path_to_result, mode="w") as f:
+            json.dump(dict(items=list_subscription), f, indent=2, ensure_ascii=False)
+        print("write to {}\n".format(path_to_result))
 
     except HttpError as e:
         print('An HTTP error {} occurred:\n{}'.format(e.resp.status, e.content))
