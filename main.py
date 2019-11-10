@@ -1,10 +1,18 @@
 #!/usr/bin/python
 '''
-quoteの上限に引っかかって現在機能しない
+version 1.0.0
+> quoteの上限に引っかかって現在機能しない
+
+version 2.0.0
+> 上記問題を解消。
+> ["にじさんじ", "ホロライブ", "VTuber"]のいずれかが含まれているものを対象とし、
+> 1回あたり 400 quotes 程度の消費
+
 '''
 
 import json
 from datetime import datetime, timedelta
+import settings  # ./settings.py
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -13,61 +21,59 @@ from googleapiclient.errors import HttpError
 # tab of
 #   https://cloud.google.com/console
 # Please ensure that you have enabled the YouTube Data API for your project.
-DEVELOPER_KEY = "AIzaSyCApR917DsH6BZLmQDX4idkt_L0AOP0Gvs"
+DEVELOPER_KEY = settings.DEVELOPER_KEY
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
 
-def get_today_subscription(channel_list):
-    videos = {}
+def get_today_subscription(channel_list, date):
+    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVELOPER_KEY)
+    videos = {"not_search": []}
 
     for tag_name in channel_list.get("tags"):
         videos[tag_name] = []
 
     for channel_info in channel_list.get("items", []):
-        videos_info = video_search(channel_info["channelId"])
+        if set(channel_info["tags"]).isdisjoint(set(["にじさんじ", "ホロライブ", "VTuber"])):
+            videos["not_search"].append(channel_info["title"])
+            continue
+        videos_info = get_video_by_activity(youtube, channel_info["channelId"], date)
         if not videos_info:
             continue
         for tag_name in channel_info["tags"]:
-            videos[tag_name].append(dict(channelId=channel_info["title"], videos=videos_info))
+            videos[tag_name].append(dict(title=channel_info["title"], videos=videos_info))
 
     return videos
 
 
-def video_search(channel_id):
-    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, developerKey=DEVELOPER_KEY)
-    dt_yesterday = "{}T00:00:00Z".format(
-        datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d"))
+def get_video_by_activity(youtube, channel_id, date):
+    activity_response = youtube.activities().list(channelId=channel_id,
+                                                  publishedAfter=date,
+                                                  part="snippet, contentDetails").execute()
 
-    # Call the search.list method to retrieve results matching the specified
-    # query term.
-    search_response = youtube.search().list(channelId=channel_id,
-                                            publishedAfter=dt_yesterday,
-                                            part="snippet",
-                                            maxResults=5).execute()
+    activity_results = []
 
-    print(search_response)
-
-    search_result = []
-
-    for searched_video in search_response.get("items", []):
-        if not searched_video:
+    for _activity in activity_response.get("items", []):
+        if not _activity["snippet"]["type"] == "upload":
             continue
-        video_info = dict(videoTitle=searched_video["snippet"]["title"],
+        video_info = dict(videoTitle=_activity["snippet"]["title"],
                           videoId="https://www.youtube.com/watch?v={}".format(
-                              searched_video["id"]["videoId"]))
-        search_result.append(video_info)
-    return search_result
+                              _activity["contentDetails"]["upload"]["videoId"]))
+        activity_results.append(video_info)
+
+    return activity_results
 
 
 if __name__ == "__main__":
     try:
-        # video_search("UC_a1ZYZ8ZTXpjg9xUY9sj8w")
-        with open("./test.json", mode="r") as f:
+        with open("./resource/subscription.json", mode="r") as f:
             df = json.load(f)
-            today_videos = get_today_subscription(df)
-            with open("./result_today.json", mode="w") as wf:
-                json.dump(today_videos, wf, ensure_ascii=False)
-        print("Success to collect today's Videos!!!")
+        dt_yesterday = "{}T00:00:00Z".format(
+            datetime.strftime(datetime.today() - timedelta(days=1), "%Y-%m-%d"))
+        today_videos = get_today_subscription(df, dt_yesterday)
+        output_name = "./db/since_{}.json".format(dt_yesterday)
+        with open(output_name, mode="w") as wf:
+            json.dump(today_videos, wf, ensure_ascii=False)
+        print("Success to collect today's Videos!!! -> {}".format(output_name))
     except HttpError as e:
         print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
